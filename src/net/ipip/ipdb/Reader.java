@@ -77,6 +77,48 @@ public class Reader {
         this.v4offset = node;
     }
 
+    FileOutputStream file = new FileOutputStream("resources/iptest-v2.txt");
+
+    public void listAll() throws IOException {
+        findInternal(this.v4offset, 0L, 0);
+    }
+
+    public void findInternal(int node, long ip, int index) throws IOException {
+        if (node > this.nodeCount || index == 32) {
+            printNode(ip, index, node);
+            return;
+        }
+        findInternal(readNode(node, 0), setIpBit(ip, 31 - index, 0), index + 1);
+        findInternal(readNode(node, 1), setIpBit(ip, 31 - index, 1), index + 1);
+    }
+
+    long setIpBit(long ip, int index, long bit) {
+        return ip | (bit << index);
+    }
+
+    void printNode(long ip, int mask, int node) throws IOException {
+        String value = "unknown";
+        try {
+            value = resolve(node);
+        } catch (Exception e) {
+            // nothing
+        }
+        String[] city = Arrays.copyOfRange(value.split("\t", this.meta.Fields.length * this.meta.Languages.size()),
+                0, this.meta.Fields.length);
+
+
+        file.write(("ip:" + longToIpStr(ip) + "/" + mask + ", city:" + Arrays.toString(city) + "\n").getBytes());
+    }
+
+    String longToIpStr(long ip) {
+        String s1 = ((ip >> 24) & 0xFF) + "";
+        String s2 = ((ip >> 16) & 0xFF) + "";
+        String s3 = ((ip >> 8) & 0xFF) + "";
+        String s4 = (ip & 0xFF) + "";
+        return s1 + "." + s2 + "." + s3 + "." + s4;
+    }
+
+
     public String[] find(String addr, String language) throws IPFormatException, InvalidDatabaseException {
 
         int off;
@@ -93,7 +135,7 @@ public class Reader {
             if (ipv == null) {
                 throw new IPFormatException("ipv6 format error");
             }
-            if ((this.meta.IPVersion & 0x02) != 0x02){
+            if ((this.meta.IPVersion & 0x02) != 0x02) {
                 throw new IPFormatException("no support ipv6");
             }
 
@@ -102,7 +144,7 @@ public class Reader {
             if (ipv == null) {
                 throw new IPFormatException("ipv4 format error");
             }
-            if ((this.meta.IPVersion & 0x01) != 0x01){
+            if ((this.meta.IPVersion & 0x01) != 0x01) {
                 throw new IPFormatException("no support ipv4");
             }
         } else {
@@ -118,7 +160,7 @@ public class Reader {
 
         final String data = this.resolve(node);
 
-        return Arrays.copyOfRange(data.split("\t", this.meta.Fields.length * this.meta.Languages.size()), off, off+this.meta.Fields.length);
+        return Arrays.copyOfRange(data.split("\t", this.meta.Fields.length * this.meta.Languages.size()), off, off + this.meta.Fields.length);
     }
 
     private int findNode(byte[] binary) throws NotFoundException {
@@ -156,10 +198,10 @@ public class Reader {
 
         byte b = 0;
         int size = Long.valueOf(bytesToLong(
-            b,
-            b,
-            this.data[resoloved],
-            this.data[resoloved+1]
+                b,
+                b,
+                this.data[resoloved],
+                this.data[resoloved + 1]
         )).intValue();
 
         if (this.data.length < (resoloved + 2 + size)) {
@@ -167,7 +209,7 @@ public class Reader {
         }
 
         try {
-            return new String(this.data, resoloved + 2, size, "UTF-8");   
+            return new String(this.data, resoloved + 2, size, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new InvalidDatabaseException("database resolve error");
         }
@@ -177,10 +219,10 @@ public class Reader {
         int off = node * 8 + index * 4;
 
         return Long.valueOf(bytesToLong(
-            this.data[off],
-            this.data[off+1],
-            this.data[off+2],
-            this.data[off+3]
+                this.data[off],
+                this.data[off + 1],
+                this.data[off + 2],
+                this.data[off + 3]
         )).intValue();
     }
 

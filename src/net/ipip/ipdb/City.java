@@ -12,11 +12,11 @@ public class City {
      */
     private Reader reader;
 
-    public City(String name) throws IOException,InvalidDatabaseException {
+    public City(String name) throws IOException, InvalidDatabaseException {
         this.reader = new Reader(name);
     }
 
-    public City(InputStream in) throws IOException,InvalidDatabaseException {
+    public City(InputStream in) throws IOException, InvalidDatabaseException {
         this.reader = new Reader(in);
     }
 
@@ -27,9 +27,9 @@ public class City {
         } catch (Exception e) {
             return false;
         }
-        
+
         return true;
-    }    
+    }
 
     public String[] find(String addr, String language) throws IPFormatException, InvalidDatabaseException {
         return this.reader.find(addr, language);
@@ -61,6 +61,10 @@ public class City {
 
     public boolean isIPv4() {
         return (this.reader.getMeta().IPVersion & 0x01) == 0x01;
+    }
+
+    public void listAll() throws IOException {
+        reader.listAll();
     }
 
     public boolean isIPv6() {

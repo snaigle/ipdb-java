@@ -2,27 +2,32 @@ package net.ipip.ipdb.tests;
 
 import net.ipip.ipdb.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
 public class Main {
 
-    public static void main(String[] args) {
+    static String file = "resources/ipiptest-v2.ipdb";
 
-        testCityV4();
+    public static void main(String[] args) throws IOException {
 
-        testBaseStation();
+//        testCityV4();
 
-        testFree();
-        testIDC();
-        testDistrict();
-        testCity();
+//        testBaseStation();
+//        System.out.println("---------------");
+//        testFree();
+//        testIDC();
+//        testDistrict();
+//        testCity();
+        City db = new City(file);
+        db.listAll();
     }
 
     public static void testBaseStation() {
         try {
 
-            BaseStation db = new BaseStation("c:/work/ipdb/base_station.ipdb");
+            BaseStation db = new BaseStation(file);
             System.out.println(Arrays.toString(db.fields()));
 
             System.out.println(Arrays.toString(db.find("112.224.4.99", "CN")));
@@ -34,7 +39,7 @@ public class Main {
 
     public static void testFree() {
         try {
-            District db = new District("C:/work/ipdb/city.free.ipdb");
+            District db = new District(file);
 
             System.out.println(Arrays.toString(db.find("1.12.13.1", "CN")));
 
@@ -94,14 +99,12 @@ public class Main {
 
     public static void testCityV4() {
         try {
-            City db = new City("C:/work/ipdb/city.ipv4.ipdb");
-
+            City db = new City(file);
+            System.out.println(db.isIPv4());
             System.out.println(Arrays.toString(db.find("1.1.1.1", "CN")));
 
             CityInfo info = db.findInfo("118.28.1.1", "CN");
-
             System.out.println(info);
-
 
 
         } catch (Exception e) {
@@ -109,7 +112,7 @@ public class Main {
         }
     }
 
-    public static void testCity() {
+    public static void testCityV6() {
         try {
             City db = new City("C:/work/ipdb/city.ipv6.ipdb");
 
